@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.3/beautify-html.min.js"></script>
+
+    <link rel="stylesheet" href="https://getbootstrap.com/1.4.0/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://getbootstrap.com/1.4.0/assets/css/docs.css">
+    <style>
+        table,
+        table tr,
+        table td {
+            margin: 0;
+            padding: 0;
+            border-collapse: separate;
+        }
+
+        table td {
+            border-top: none;
+        }
+
+        main {
+            margin: 64px 0;
+        }
+
+        input[type="range"] {
+            box-shadow: none;
+        }
+
+        #snippet {
+            width: 100%;
+            background-color: #f5f5f5;
+            display: block;
+            padding: 8.5px;
+            margin: 0 0 18px;
+            line-height: 18px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            white-space: pre;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: Monaco, Andale Mono, Courier New, monospace;
+            font-size: 12px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            color: #222;
+        }
+
+        #overview {
+            padding-top: 0;
+        }
+
+        .result {
+            height: 360px;
+            display: grid;
+            place-items: center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header class="jumbotron subhead" id="overview">
+        <div class="inner">
+            <div class="container">
+                <h1>Email box shadow</h1>
+                <p class="lead">Create box shadow for your email by using multiples tables with different borders
+                    colors.</p>
+                <p><a href="https://arnocellarier.fr/?utm_source=email_boxshadow#tools">← Back to arnocellarier.fr</a>
+                </p>
+            </div><!-- /container -->
+        </div>
+    </header>
+
+    <main class="container" x-data="app">
+
+        <div class="page-header">
+            <h1>Customization</h1>
+        </div>
+
+        <div class="row">
+            <div class="span8">
+                <form>
+                    <fieldset>
+                        <div class="clearfix">
+                            <label for="spread">Spread</label>
+                            <div class="input">
+                                <input id="spread" type="range" step="1" min="0" max="22" x-model="spread">
+                                <span x-text="spread + 'px'" class="help-inline"></span>
+                            </div>
+                        </div>
+
+                        <div class="clearfix">
+                            <label for="color">Color</label>
+                            <div class="input">
+                                <input type="color" id="color" list="color-values" x-model="color">
+                                <datalist id="color-values">
+                                    <option value="#AAAAAA">
+                                    <option value="#CCCCCC">
+                                    <option value="#DDDDDD">
+                                    <option value="#EEEEEE">
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="clearfix">
+                            <label for="blur">Blur</label>
+                            <div class="input">
+                                <input type="range" id="blur" step="0.01" min="0" max="1" x-model="blur">
+                            </div>
+                        </div>
+
+                        <div class="clearfix">
+                            <label for="snippet">Code</label>
+                            <div class="input">
+                                <textarea x-text="HTML" id="snippet" rows="12"></textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="alert-message block-message warning">
+                        <p><strong>Check compatibility before use it in production.</strong> Only tested in Gmail and
+                            Windows 10
+                            Mail app.</p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="span8">
+                <div class="result">
+                    <div x-html="HTML"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                color: "#DDDDDD",
+                spread: 4,
+                blur: .75,
+
+                hexaOpacity(ratio) {
+                    const r = Math.min(ratio, 1);
+                    return this.mixedColorsPercentage(this.color, '#ffffff', r * this.blur);
+                },
+
+                mixedColorsPercentage(color1, color2, ratio) {
+                    const hexaColor1 = color1.slice(1);
+                    const hexaColor2 = color2.slice(1);
+
+                    const hexaColor1R = parseInt(hexaColor1.slice(0, 2), 16);
+                    const hexaColor1G = parseInt(hexaColor1.slice(2, 4), 16);
+                    const hexaColor1B = parseInt(hexaColor1.slice(4, 6), 16);
+
+                    const hexaColor2R = parseInt(hexaColor2.slice(0, 2), 16);
+                    const hexaColor2G = parseInt(hexaColor2.slice(2, 4), 16);
+                    const hexaColor2B = parseInt(hexaColor2.slice(4, 6), 16);
+
+                    const hexaColor1RPercentage = hexaColor1R / 255;
+                    const hexaColor1GPercentage = hexaColor1G / 255;
+                    const hexaColor1BPercentage = hexaColor1B / 255;
+
+                    const hexaColor2RPercentage = hexaColor2R / 255;
+                    const hexaColor2GPercentage = hexaColor2G / 255;
+                    const hexaColor2BPercentage = hexaColor2B / 255;
+
+                    const hexaColor1RPercentageMixed = hexaColor1RPercentage * (1 - ratio);
+                    const hexaColor1GPercentageMixed = hexaColor1GPercentage * (1 - ratio);
+                    const hexaColor1BPercentageMixed = hexaColor1BPercentage * (1 - ratio);
+
+                    const hexaColor2RPercentageMixed = hexaColor2RPercentage * ratio;
+                    const hexaColor2GPercentageMixed = hexaColor2GPercentage * ratio;
+                    const hexaColor2BPercentageMixed = hexaColor2BPercentage * ratio;
+
+                    const hexaColorRPercentageMixed = hexaColor1RPercentageMixed + hexaColor2RPercentageMixed;
+                    const hexaColorGPercentageMixed = hexaColor1GPercentageMixed + hexaColor2GPercentageMixed;
+                    const hexaColorBPercentageMixed = hexaColor1BPercentageMixed + hexaColor2BPercentageMixed;
+
+                    const hexaColorR = Math.round(hexaColorRPercentageMixed * 255).toString(16).padStart(2, '0');
+                    const hexaColorG = Math.round(hexaColorGPercentageMixed * 255).toString(16).padStart(2, '0');
+                    const hexaColorB = Math.round(hexaColorBPercentageMixed * 255).toString(16).padStart(2, '0');
+
+                    return `#${hexaColorR}${hexaColorG}${hexaColorB}`;
+                },
+
+                layer(depth) {
+                    if (depth == 0) {
+                        return `<table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <div style="width: 360px; height: 240px;"></div>
+                                </td>
+                            </tr>
+                        </table>`;
+                    } else {
+                        const borderColor = this.hexaOpacity(1 / this.spread * (depth ** 1.1));
+                        return `<table width="100%" border="1" bordercolor="${borderColor}" cellpadding="0" cellspacing="0" style="border-collapse: separate; border-radius: ${depth * 2}px; border: 1px solid ${borderColor}">
+                            <tr style="border-radius: ${depth * 2}px;">
+                                <td border="0" style="border-radius: ${depth * 2}px; border: none;">
+                                    ${this.layer(depth - 1)}
+                                </td>
+                            </tr>
+                        </table>`;
+                    }
+                },
+
+                get HTML() {
+                    return html_beautify(this.layer(this.spread));
+                }
+            }));
+        })
+    </script>
+
+</body>
+
+</html>
