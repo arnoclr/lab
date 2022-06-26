@@ -119,6 +119,15 @@
                             <label for="blur">Blur</label>
                             <div class="input">
                                 <input type="range" id="blur" step="0.01" min="0" max="1" x-model="blur">
+                                <span x-text="blur * 100 + '%'" class="help-inline"></span>
+                            </div>
+                        </div>
+
+                        <div class="clearfix">
+                            <label for="blur">Border Radius</label>
+                            <div class="input">
+                                <input type="range" id="borderRadius" step="1" min="0" max="48" x-model="borderRadius">
+                                <span x-text="borderRadius + 'px'" class="help-inline"></span>
                             </div>
                         </div>
 
@@ -152,6 +161,7 @@
                 color: "#DDDDDD",
                 spread: 4,
                 blur: .75,
+                borderRadius: 0,
 
                 hexaOpacity(ratio) {
                     const r = Math.min(ratio, 1);
@@ -208,9 +218,9 @@
                         </table>`;
                     } else {
                         const borderColor = this.hexaOpacity(1 / this.spread * (depth ** 1.1));
-                        return `<table width="100%" border="1" bordercolor="${borderColor}" cellpadding="0" cellspacing="0" style="border-collapse: separate; border-radius: ${depth * 2}px; border: 1px solid ${borderColor}">
+                        return `<table width="100%" border="1" bordercolor="${borderColor}" cellpadding="0" cellspacing="0" style="border-collapse: separate; border-radius: ${depth * 2 + parseInt(this.borderRadius)}px; border: 1px solid ${borderColor}">
                             <tr style="border-radius: ${depth * 2}px;">
-                                <td border="0" style="border-radius: ${depth * 2}px; border: none;">
+                                <td border="0" style="border-radius: ${depth * 2 + parseInt(this.borderRadius)}px; border: none;">
                                     ${this.layer(depth - 1)}
                                 </td>
                             </tr>
